@@ -15,7 +15,10 @@
  - `make test` to run tests
  - `make stop` to stop the containers
  - There are other make cmds that I use for development (like to gen swagger docs and mocks) - `make swagger` and `make mocks`
- - Please also see screenshot of a test run I did
+ - Please also see screenshots of a test run I did
+
+<img width="1576" alt="Image" src="https://github.com/user-attachments/assets/65acaa32-1835-41be-b7ba-4e9830eed06c" />
+<img width="1716" alt="Image" src="https://github.com/user-attachments/assets/eba92523-1753-464a-aff3-d670de13b3bf" />
 
  ## Error Handling
 
