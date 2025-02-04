@@ -1,0 +1,43 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pismo-backend
+    ports:
+      - "2090:2090"
+    environment:
+      - DEBUG=true
+      - POSTGRES_DNS=postgres://pismo:pismo@database:5432/pismo_db?sslmode=disable
+      - HTTP_LISTEN_HOST_PORT=0.0.0.0:2090
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - pismo-network
+  database:
+    image: postgres:alpine
+    container_name: "pismo_postgres"
+    environment:
+      POSTGRES_USER: "pismo"
+      POSTGRES_PASSWORD: "pismo"
+      POSTGRES_DB: "pismo_db"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pismo_postgres:/var/lib/postgresql/data
+    networks:
+      - pismo-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "pismo", "-d", "pismo_db"]
+      interval: 1s
+      retries: 3
+      timeout: 5s
+      start_period: 3s
+
+volumes:
+  pismo_postgres:
+
+networks:
+  pismo-network:
+    driver: bridge

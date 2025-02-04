@@ -1,0 +1,218 @@
+basePath: /
+definitions:
+  Account:
+    properties:
+      created_at:
+        description: CreatedAt with default
+        type: string
+      document_number:
+        description: Document number
+        type: string
+      id:
+        description: Primary key
+        type: integer
+      updated_at:
+        description: UpdatedAt with default
+        type: string
+    type: object
+  CreateAccountRequest:
+    properties:
+      document_number:
+        type: string
+    required:
+    - document_number
+    type: object
+  CreateTransactionRequest:
+    properties:
+      account_id:
+        type: integer
+      amount:
+        type: number
+      operation_type_id:
+        type: integer
+    required:
+    - account_id
+    - amount
+    - operation_type_id
+    type: object
+  Response:
+    properties:
+      code:
+        type: integer
+      error:
+        $ref: '#/definitions/echo.HTTPError'
+      success:
+        type: boolean
+    type: object
+  Transaction:
+    properties:
+      account_id:
+        description: Foreign key to account
+        type: integer
+      amount:
+        description: Transaction amount
+        type: number
+      event_date:
+        description: CreatedAt with default, called EventDate due to assignment instructions
+        type: string
+      id:
+        description: Primary key
+        type: integer
+      operationTypeID:
+        description: Foreign key to OperationType
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/TxnStatus'
+        description: status
+      updated_at:
+        description: UpdatedAt with default
+        type: string
+    type: object
+  TxnStatus:
+    enum:
+    - pending
+    - completed
+    - failed
+    type: string
+    x-enum-varnames:
+    - TxnStatusPending
+    - TxnStatusCompleted
+    - TxnStatusFailed
+  echo.HTTPError:
+    properties:
+      message: {}
+    type: object
+info:
+  contact:
+    name: akhiltak@gmail.com
+  description: Transaction API for Pismo
+  title: Transaction API
+  version: "1.0"
+paths:
+  /accounts:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateAccountRequest
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/CreateAccountRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/Account'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      summary: CreateAccount
+      tags:
+      - account
+  /accounts/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Account'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      summary: GetAccountByID
+      tags:
+      - account
+  /health:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: healthcheck
+      tags:
+      - health
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Transaction'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      summary: GetTransactions
+      tags:
+      - transaction
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: CreateTransactionRequest
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/CreateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/Transaction'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Response'
+      summary: CreateTransaction
+      tags:
+      - transaction
+swagger: "2.0"

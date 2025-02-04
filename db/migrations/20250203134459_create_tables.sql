@@ -1,0 +1,31 @@
+-- migrate:up
+CREATE TABLE accounts (
+    id SERIAL PRIMARY KEY,
+    document_number VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE operation_types (
+    id SERIAL PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    entry_type VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE transactions (
+    id SERIAL PRIMARY KEY,
+    account_id SERIAL NOT NULL REFERENCES accounts(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    operation_type_id SERIAL NOT NULL REFERENCES operation_types(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    amount DECIMAL(10, 2) NOT NULL, -- keeping precision to 2 digits since it is a currency amount
+    status VARCHAR(255) NOT NULL,
+    event_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- migrate:down
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS operation_types;
+DROP TABLE IF EXISTS accounts;
+
